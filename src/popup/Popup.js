@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './Popup.css';
+import getJobs from '../utils/getJobs';
+import addJob from '../utils/addJob';
 
 
 
@@ -25,45 +27,13 @@ const Popup = () => {
   };
 
   const saveJob = () => {
-    if (localStorage.getItem('jobs') === null || localStorage.getItem('jobs') === undefined) {
-      localStorage.setItem('jobs', JSON.stringify([1]));
-    }
-
-    let pushArray = [...JSON.parse(localStorage.getItem('jobs'))];
-
-    let id = pushArray.length - 1;
-
-    pushArray.push({
-      'id': id,
-      'company': company,
-      'url': url
-    });
-
-
-    localStorage.setItem('jobs', JSON.stringify(pushArray));
-
+    addJob([...getJobs('jobs')], company, url, 'jobs');
   };
 
 
   const superSave = () => {
     // same as saveJob() but it saves to a special short list
-    if (localStorage.getItem('superjobs') === null || localStorage.getItem('superjobs') === undefined) {
-      localStorage.setItem('superjobs', JSON.stringify([1]));
-    }
-
-    let pushArray = [...JSON.parse(localStorage.getItem('superjobs'))];
-
-    let id = pushArray.length - 1;
-
-    pushArray.push({
-      'id': id,
-      'company': company,
-      'url': url
-    });
-
-
-    localStorage.setItem('superjobs', JSON.stringify(pushArray));
-
+    addJob([...getJobs('superjobs')], company, url, 'superjobs');
   };
 
   const clearData = () => {

@@ -1,42 +1,70 @@
 import React from 'react';
 import './Sidebar.css';
+import getJobs from '../utils/getJobs';
 
 const Sidebar = () => {
-  if (localStorage.getItem('jobs') === null || localStorage.getItem('jobs') === undefined) {
-    localStorage.setItem('jobs', JSON.stringify([1]));
-  }
-  if (localStorage.getItem('superjobs') === null || localStorage.getItem('superjobs') === undefined) {
-    localStorage.setItem('superjobs', JSON.stringify([1]));
-  }
-  
-  let jobs = JSON.parse(localStorage.getItem('jobs'));
-  let superjobs = JSON.parse(localStorage.getItem('superjobs'));
+  const jobs = getJobs('jobs');
+  const superjobs = getJobs('superjobs');
 
   // the arrays have '1' as their first item because in the popup we have to assign something so its not null... this just removes that so its a uniform array
-  let jobsArray = jobs.splice(1, jobs.length + 1);
-  let superJobsArray = superjobs.splice(1, jobs.length + 1);
+  const jobsArray = jobs.splice(1, jobs.length + 1);
+  const superJobsArray = superjobs.splice(1, jobs.length + 1);
 
   // how to get it to update real time? global state?
-  const listedJobs = jobsArray.map((item) => <div key={item.id}>{item.company}</div>);
-  const superListedJobs = superJobsArray.map((item) => <div key={item.id}>{item.company}</div>);
+  const listedJobs = jobsArray.map((item) => <tr><th>{item.company}</th><th>{item.time}</th></tr>);
+  const superListedJobs = superJobsArray.map((item) => <tr><th>{item.company}</th><th>{item.time}</th></tr>);
+
+  const bigArray = jobsArray.concat(superJobsArray);
+
+  function convertToCSV(objArray) {
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    var str = '';
+
+    for (var i = 0; i < array.length; i++) {
+      var line = '';
+      for (var index in array[i]) {
+        if (line != '') line += ','
+
+        line += array[i][index];
+      }
+
+      str += line + '\r\n';
+    }
+
+    return str;
+  }
+
+
+  const copyData = () => {
+    navigator.clipboard.writeText(convertToCSV(bigArray)); // csv
+    document.execCommand('copy');
+  };
+
+  const clearData = () => {
+    localStorage.removeItem('jobs');
+    localStorage.removeItem('superjobs');
+  };
+
 
   return (
     <div>
       <div>
-        List of jobs you've applied to:
+        Jobs you've applied to:
       </div>
-      <div>
-        {listedJobs}
-      </div>
-      <div>
-        {superListedJobs}
-      </div>
-      <div>
-        Some graphs representing that data:
-      </div>
-      <button>
-        Export data to xml
-      </button>
+      <table id='theTable'>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Date/time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listedJobs}
+          {superListedJobs}
+        </tbody>
+      </table>
+      <button onClick={() => copyData()}>copy data to csv</button>
+      <button onClick={() => clearData()}>clear data</button>
     </div>
   );
 };
