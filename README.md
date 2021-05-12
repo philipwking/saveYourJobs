@@ -12,4 +12,10 @@ to add:
 
 -make it look nice 
 
--log date/time saved
+## dev instructions
+
+npm i
+npm run dev
+go to about:debugging#/runtime/this-firefox
+add temporary extension
+select saveYourJobs/dev/manifest.json
